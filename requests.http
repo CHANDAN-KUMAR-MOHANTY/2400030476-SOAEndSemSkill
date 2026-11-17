@@ -1,0 +1,19 @@
+### 1. Direct Target Service Check (Port 8081)
+GET http://localhost:8081/internal/accounts
+Accept: application/json
+
+### 2. Direct Target Service with ID (Port 8081)
+GET http://localhost:8081/internal/accounts/ACC001
+Accept: application/json
+
+### 3. Public API Gateway with Path Rewriting (Port 8080) -> Rewritten to Port 8081
+GET http://localhost:8080/accounts/
+Accept: application/json
+
+### 4. Public API Gateway without Trailing Slash (Port 8080)
+GET http://localhost:8080/accounts
+Accept: application/json
+
+### 5. Public API Gateway with Account ID (Port 8080) -> Rewritten to Port 8081
+GET http://localhost:8080/accounts/ACC001
+Accept: application/json

@@ -1,0 +1,52 @@
+# =====================================================
+#  API Gateway Configuration — Path Rewriting Demo
+# =====================================================
+#
+#  Public endpoint :  GET http://localhost:8080/accounts
+#  Rewritten to    :  GET http://localhost:8081/api/v1/internal/accounts
+#
+#  Two approaches are shown (use ONE at a time):
+#    1. RewritePath filter  (ACTIVE — recommended, most flexible)
+#    2. StripPrefix filter  (commented out — simpler but less control)
+# =====================================================
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      # ── Approach 1: RewritePath filter ──────────────────────
+      routes:
+        - id: account-service-route
+          uri: http://localhost:8081
+          predicates:
+            - Path=/accounts, /accounts/**
+          filters:
+            # Rewrites /accounts      →  /api/v1/internal/accounts
+            # Rewrites /accounts/X    →  /api/v1/internal/accounts/X
+            - RewritePath=/accounts(?<segment>/?.*), /api/v1/internal/accounts${segment}
+
+      # ── Approach 2: StripPrefix filter (alternative) ────────
+      # Uncomment the block below and comment out the route above
+      # to use StripPrefix instead. StripPrefix=1 removes the
+      # first path segment (/accounts) and you prepend the
+      # internal prefix with PrefixPath.
+      #
+      # routes:
+      #   - id: account-service-route
+      #     uri: http://localhost:8081
+      #     predicates:
+      #       - Path=/accounts/**
+      #     filters:
+      #       - StripPrefix=1
+      #       - PrefixPath=/api/v1/internal/accounts
+
+# Enable gateway debug logging to see rewritten paths
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: INFO

@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: BankingGateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: account-service-yaml-route
+          uri: http://localhost:8081
+          predicates:
+            - Path=/accounts, /accounts/**
+          filters:
+            - RewritePath=/accounts(?<segment>/?.*), /internal/accounts${segment}
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: INFO
